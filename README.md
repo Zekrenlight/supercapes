@@ -7,6 +7,11 @@ It gives capes cloth physics that move with the player and shows public cape pic
 
 It is an independent implementation. It shares no code, assets, names or config formats with other cape mods.
 
+<img width="639" height="477" alt="image" src="https://github.com/user-attachments/assets/57b8af28-5224-4bcf-b93a-c062a7f7de54" />
+<img width="639" height="477" alt="image" src="https://github.com/user-attachments/assets/b47b9c47-bdc5-4de7-8255-5c8145839e60" />
+<img width="639" height="477" alt="image" src="https://github.com/user-attachments/assets/a3a70cb4-47b6-4e68-8737-e9a121bb7f0d" />
+
+
 ## Network and privacy
 
 **SuperCapes downloads public cape pictures.** With **Online capes** on (the default), it asks each enabled source for the cape of every player you can see. It sends only the player's name or UUID. **OptiFine** and **MinecraftCapes** are on by default. LabyMod and Cloaks are off.
