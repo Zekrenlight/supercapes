@@ -1,0 +1,9 @@
+/target
+/.sunrise/
+.sunrise/
+*.smod
+.DS_Store
+*.swp
+*.swo
+.idea/
+.vscode/

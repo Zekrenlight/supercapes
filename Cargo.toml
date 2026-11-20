@@ -1,0 +1,14 @@
+[package]
+name = "mod-supercapes"
+version = "1.0.0"
+edition = "2024"
+license = "MIT"
+authors = ["Zekrenlight"]
+publish = false
+description = "SuperCapes for Sunrise: cape cloth that moves with the player, and public cape pictures (native mod)."
+
+[dependencies]
+# The pinned SDK's API crate, fetched into .sunrise/sdk/ by any `cargo sunrise-mod` command
+# (the launcher builds against its own copy of the same build). The build it names is
+# `[native] sunrise` in sunrise-mod.toml.
+sunrise-mod-api = { path = ".sunrise/sdk/api/crates/sunrise-mod-api" }
