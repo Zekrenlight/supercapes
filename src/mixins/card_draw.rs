@@ -3,8 +3,9 @@
 fn supercapes_card_options_draw(
     game: &mut crate::game::Game<'_>,
     batch: &mut sunrise_client::hud::HudBatch,
+    allowed: bool,
 ) -> ::core::ops::ControlFlow<()> {
-    if !crate::game::supercapes_card::active(game) {
+    if !allowed || !crate::game::supercapes_card::active(game) {
         return ::core::ops::ControlFlow::Continue(());
     }
     crate::game::supercapes_card::draw(game, batch);
