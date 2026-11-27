@@ -193,7 +193,7 @@ fn geo(m: &Measure, w: i32, h: i32, searchable: bool) -> Geo {
     let ch = ((h as f32 * 0.72) as i32).max(150).min(h - 8).max(80);
     let x = (w - cw) / 2;
     let y = (h - ch) / 2;
-    let dw = m.width_str("Done") + 12;
+    let dw = m.width(&lit("Done")) + 12;
     let done = [x + cw - PAD - dw, y + 6, dw, CHIP_H];
     let mut top = y + 28;
     let mut tabs = Vec::new();

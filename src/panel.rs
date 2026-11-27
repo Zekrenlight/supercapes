@@ -226,46 +226,47 @@ fn paint_sources(
         lay.body[2],
         (lay.body[1] + lay.body[3] - list_y).max(8.0),
     ];
-    let clipped = d.push_clip(list).is_ok();
-    for (i, (id, on)) in sources_on.iter().enumerate() {
-        let Some(src) = sources::by_id(id) else {
-            continue;
-        };
-        let Some(row) = layout::source_row(list, scroll, i) else {
-            continue;
-        };
-        fill(d, row, if hit(p, row) { HOVER } else { CHIP });
-        let mid = row[1] + 3.0;
-        let tw = 28.0;
-        let title = fit(d, src.title, row[2] - tw * 3.0 - 14.0);
-        ink(
-            d,
-            &title,
-            [row[0] + 4.0, mid],
-            if *on { TEXT } else { DIM },
-        );
-        let up = [row[0] + row[2] - tw * 3.0 - 6.0, row[1] + 1.0, tw, row[3] - 2.0];
-        let dn = [row[0] + row[2] - tw * 2.0 - 4.0, row[1] + 1.0, tw, row[3] - 2.0];
-        let tog = [row[0] + row[2] - tw - 2.0, row[1] + 1.0, tw, row[3] - 2.0];
-        fill(d, up, if hit(p, up) { tab_on() } else { TAB });
-        fill(d, dn, if hit(p, dn) { tab_on() } else { TAB });
-        fill(
-            d,
-            tog,
-            if *on { tab_on() } else { CHIP },
-        );
-        ink_center(d, "Up", up[0] + up[2] * 0.5, mid, TEXT);
-        ink_center(d, "Dn", dn[0] + dn[2] * 0.5, mid, TEXT);
-        ink_center(
-            d,
-            if *on { "On" } else { "Off" },
-            tog[0] + tog[2] * 0.5,
-            mid,
-            TEXT,
-        );
-    }
-    if clipped {
-        let _ = d.pop_clip();
+    let mut paint_rows = |d: &mut dyn DrawContext| {
+            for (i, (id, on)) in sources_on.iter().enumerate() {
+                let Some(src) = sources::by_id(id) else {
+                    continue;
+                };
+                let Some(row) = layout::source_row(list, scroll, i) else {
+                    continue;
+                };
+                fill(d, row, if hit(p, row) { HOVER } else { CHIP });
+                let mid = row[1] + 3.0;
+                let tw = 28.0;
+                let title = fit(d, src.title, row[2] - tw * 3.0 - 14.0);
+                ink(
+                    d,
+                    &title,
+                    [row[0] + 4.0, mid],
+                    if *on { TEXT } else { DIM },
+                );
+                let up = [row[0] + row[2] - tw * 3.0 - 6.0, row[1] + 1.0, tw, row[3] - 2.0];
+                let dn = [row[0] + row[2] - tw * 2.0 - 4.0, row[1] + 1.0, tw, row[3] - 2.0];
+                let tog = [row[0] + row[2] - tw - 2.0, row[1] + 1.0, tw, row[3] - 2.0];
+                fill(d, up, if hit(p, up) { tab_on() } else { TAB });
+                fill(d, dn, if hit(p, dn) { tab_on() } else { TAB });
+                fill(
+                    d,
+                    tog,
+                    if *on { tab_on() } else { CHIP },
+                );
+                ink_center(d, "Up", up[0] + up[2] * 0.5, mid, TEXT);
+                ink_center(d, "Dn", dn[0] + dn[2] * 0.5, mid, TEXT);
+                ink_center(
+                    d,
+                    if *on { "On" } else { "Off" },
+                    tog[0] + tog[2] * 0.5,
+                    mid,
+                    TEXT,
+                );
+            }
+    };
+    if d.with_scissor(list, &mut paint_rows).is_err() {
+        paint_rows(d);
     }
 }
 

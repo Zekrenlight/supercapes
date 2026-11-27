@@ -15,14 +15,18 @@ mod rules_tests;
 
 use logic::physics;
 use mod_api::{
-    BlockEntityDrawContext, ClientHost, CommandEvent, Flow, Hooks, MobRender, PlayerRender,
-    RenderFramePreEvent, RenderPlayerPostEvent, ScreenKeyPressedPreEvent,
-    ScreenMouseButtonPressedPreEvent, ScreenMouseScrolledPreEvent, ScreenRenderPostEvent, Text,
+    BlockEntityDrawContext, ClientHost, Command, CommandArgumentValue, Flow, Hooks, MobRender,
+    PlayerRender, RegisterClientCommandsEvent, RenderFramePreEvent, RenderPlayerPostEvent,
+    ScreenKeyPressedPreEvent, ScreenMouseButtonPressedPreEvent, ScreenMouseScrolledPreEvent,
+    ScreenRenderPostEvent, SettingKey, Text,
 };
+use std::sync::OnceLock;
 use session as hook;
 
 #[derive(Default)]
 struct SuperCapes;
+
+static ACCENT_KEY: OnceLock<Option<SettingKey>> = OnceLock::new();
 
 fn say(host: &mut dyn ClientHost, line: &str) {
     let _ = host.chat_line(Text::literal(line));
@@ -131,18 +135,35 @@ fn draw_cloth(mob: &MobRender<'_>, who: &PlayerRender<'_>, draw: &mut dyn BlockE
 impl Hooks for SuperCapes {
     fn register(&self, registrar: &mut dyn mod_api::Registrar, _cx: &mod_api::RegistrationContext) {
         // The accent colour of supercapes's cards (Sunrise orange by default).
-        let _ = registrar.register_setting(
-            mod_api::SettingSpec::color("accent", "supercapes.setting.accent", 0xF9801D)
-                .tooltip("supercapes.setting.accent.tooltip"),
-        );
+        let accent = registrar
+            .register_setting(
+                mod_api::SettingSpec::color("accent", "supercapes.setting.accent", 0xF9801D)
+                    .tooltip("supercapes.setting.accent.tooltip"),
+            )
+            .ok();
+        let _ = ACCENT_KEY.set(accent);
     }
 
-    fn command(&self, host: &mut dyn ClientHost, event: &mut CommandEvent<'_>) -> Flow {
-        if handle_command(host, event.command) {
-            Flow::Cancel
-        } else {
-            Flow::Continue
-        }
+    fn register_client_commands(
+        &self,
+        _host: &mut dyn ClientHost,
+        event: &mut RegisterClientCommandsEvent<'_>,
+    ) {
+        event.commands.push(
+            Command::new("supercapes [sub:text]").executes_client(|host, inv| {
+                let rest = match inv.argument("sub") {
+                    Some(CommandArgumentValue::String(s)) => s.clone(),
+                    _ => String::new(),
+                };
+                let cmd = if rest.is_empty() {
+                    "supercapes".to_string()
+                } else {
+                    format!("supercapes {rest}")
+                };
+                let _ = handle_command(host, &cmd);
+                Some(1)
+            }),
+        );
     }
 
     /// Applies a close the card asked for (Done, Escape, a click outside it).
@@ -164,7 +185,14 @@ impl Hooks for SuperCapes {
     }
 
     fn screen_render_post(&self, host: &dyn ClientHost, event: &mut ScreenRenderPostEvent<'_>) {
-        panel::set_accent(host.setting_color("accent").unwrap_or(0xF9801D));
+        panel::set_accent(
+            ACCENT_KEY
+                .get()
+                .copied()
+                .flatten()
+                .and_then(|k| host.setting_color(k).ok())
+                .unwrap_or(0xF9801D),
+        );
         panel::paint(host, &mut *event.draw, event.screen);
     }
 

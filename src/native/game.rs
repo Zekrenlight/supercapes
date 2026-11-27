@@ -17,7 +17,7 @@ use std::io::Read;
 use std::time::{Duration, Instant};
 
 fn data_dir(game: &Game<'_>) -> std::path::PathBuf {
-    game.native_data_dir(hook::MOD_ID)
+    game.instance_dir().join("sunrise-mod-data").join(hook::MOD_ID)
 }
 
 fn cache_dir(game: &Game<'_>) -> std::path::PathBuf {
