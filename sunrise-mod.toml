@@ -1,6 +1,6 @@
 id = "supercapes"
 name = "SuperCapes"
-version = "1.0.2"
+version = "1.0.3"
 description = "Cape cloth that moves with the player, and public cape pictures (OptiFine and MinecraftCapes by default), with a settings card. No extra keybind."
 authors = ["Zekrenlight"]
 license = "MIT"
